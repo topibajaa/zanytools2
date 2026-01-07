@@ -3,76 +3,519 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Palette Generator</title>
+    <title>Color Palette Generator | DevTools Pro</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS untuk color palette */
-        .color-palette {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 20px 0;
+        .tool-page {
+            padding: 2rem 0;
         }
-        .color-box {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
+        
+        .tool-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tool-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray);
+            color: var(--white);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .palette-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .color-card {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .color-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .color-display {
+            height: 150px;
             position: relative;
         }
-        .color-code {
-            position: absolute;
-            bottom: 5px;
-            width: 100%;
-            text-align: center;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 3px;
-            font-family: monospace;
+        
+        .color-info {
+            padding: 1rem;
+            background: var(--white);
+            border-top: var(--border);
         }
-        button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
+        
+        .color-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .color-name {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .copy-btn {
+            background: none;
             border: none;
-            border-radius: 5px;
+            color: var(--gray);
             cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            color: var(--primary);
+            background: var(--gray-light);
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        @media (max-width: 768px) {
+            .palette-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .control-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .palette-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tool-header h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Color Palette Generator</h1>
-        <button id="generateBtn">Generate Palette</button>
-        <div class="color-palette" id="palette"></div>
+    <!-- Header khusus tool -->
+    <div class="tool-header">
+        <a href="../index.html" class="btn back-btn">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+        <h1><i class="fas fa-palette"></i> Color Palette Generator</h1>
+        <p>Generate skema warna yang harmonis dengan satu klik. Klik warna untuk menyalin kode warna.</p>
     </div>
-    
-    <script>
-        function generateColor() {
-            return '#' + Math.floor(Math.random()*16777215).toString(16);
-        }
-        
-        function generatePalette() {
-            const palette = document.getElementById('palette');
-            palette.innerHTML = '';
+
+    <main class="container tool-page">
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <button class="btn" id="generateBtn">
+                    <i class="fas fa-bolt"></i> Generate Palette
+                </button>
+                <button class="btn btn-secondary" id="lockAllBtn">
+                    <i class="fas fa-lock"></i> Lock All
+                </button>
+                <button class="btn btn-secondary" id="unlockAllBtn">
+                    <i class="fas fa-unlock"></i> Unlock All
+                </button>
+                <button class="btn btn-success" id="savePaletteBtn">
+                    <i class="fas fa-save"></i> Save Palette
+                </button>
+            </div>
             
-            for(let i = 0; i < 5; i++) {
-                const color = generateColor();
-                const colorBox = document.createElement('div');
-                colorBox.className = 'color-box';
-                colorBox.style.backgroundColor = color;
-                colorBox.innerHTML = `<div class="color-code">${color}</div>`;
+            <div class="control-group">
+                <label for="paletteType">Tipe Palette:</label>
+                <select id="paletteType" class="btn btn-secondary">
+                    <option value="analogous">Analogous</option>
+                    <option value="complementary">Complementary</option>
+                    <option value="triadic">Triadic</option>
+                    <option value="tetradic">Tetradic</option>
+                    <option value="monochromatic">Monochromatic</option>
+                    <option value="random">Random</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Palette Display -->
+        <div class="palette-container">
+            <div class="palette-grid" id="paletteGrid">
+                <!-- Color cards will be generated here -->
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn" id="exportBtn">
+                    <i class="fas fa-download"></i> Export as CSS
+                </button>
+            </div>
+        </div>
+        
+        <!-- Palette History -->
+        <div class="controls" style="margin-top: 2rem;">
+            <h3><i class="fas fa-history"></i> Palette History</h3>
+            <div id="paletteHistory" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                <!-- History items will be added here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i> <span id="notificationText">Copied to clipboard!</span>
+    </div>
+
+    <!-- JavaScript langsung di dalam file -->
+    <script>
+        // Color Palette Generator Logic
+        class ColorPalette {
+            constructor() {
+                this.palette = [];
+                this.lockedColors = new Set();
+                this.history = JSON.parse(localStorage.getItem('paletteHistory') || '[]');
+                this.init();
+            }
+            
+            init() {
+                this.generatePalette();
+                this.setupEventListeners();
+                this.renderHistory();
+            }
+            
+            generatePalette() {
+                const type = document.getElementById('paletteType').value;
+                this.palette = [];
                 
-                colorBox.onclick = () => {
-                    navigator.clipboard.writeText(color);
-                    alert('Copied: ' + color);
+                // Preserve locked colors
+                for (let i = 0; i < 5; i++) {
+                    if (this.lockedColors.has(i) && this.palette[i]) {
+                        continue;
+                    }
+                    
+                    let color;
+                    switch(type) {
+                        case 'analogous':
+                            color = this.generateAnalogousColor(i);
+                            break;
+                        case 'complementary':
+                            color = this.generateComplementaryColor(i);
+                            break;
+                        case 'triadic':
+                            color = this.generateTriadicColor(i);
+                            break;
+                        case 'tetradic':
+                            color = this.generateTetradicColor(i);
+                            break;
+                        case 'monochromatic':
+                            color = this.generateMonochromaticColor(i);
+                            break;
+                        default:
+                            color = this.generateRandomColor();
+                    }
+                    
+                    this.palette[i] = color;
+                }
+                
+                this.renderPalette();
+            }
+            
+            generateRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+            
+            generateAnalogousColor(index) {
+                const baseHue = Math.random() * 360;
+                const hue = (baseHue + (index * 30)) % 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            }
+            
+            generateComplementaryColor(index) {
+                const baseHue = Math.random() * 360;
+                const hue = (baseHue + (index * 180)) % 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            }
+            
+            generateTriadicColor(index) {
+                const baseHue = Math.random() * 360;
+                const hue = (baseHue + (index * 120)) % 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            }
+            
+            generateTetradicColor(index) {
+                const baseHue = Math.random() * 360;
+                const hue = (baseHue + (index * 90)) % 360;
+                return `hsl(${hue}, 70%, 60%)`;
+            }
+            
+            generateMonochromaticColor(index) {
+                const baseHue = Math.random() * 360;
+                const lightness = 40 + (index * 15);
+                return `hsl(${baseHue}, 70%, ${lightness}%)`;
+            }
+            
+            renderPalette() {
+                const paletteGrid = document.getElementById('paletteGrid');
+                paletteGrid.innerHTML = '';
+                
+                const colorNames = ['Primary', 'Secondary', 'Accent', 'Background', 'Text'];
+                
+                this.palette.forEach((color, index) => {
+                    const colorCard = document.createElement('div');
+                    colorCard.className = 'color-card';
+                    colorCard.innerHTML = `
+                        <div class="color-display" style="background: ${color}" data-index="${index}">
+                            ${this.lockedColors.has(index) ? 
+                                '<div style="position: absolute; top: 10px; right: 10px; color: white; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 4px;"><i class="fas fa-lock"></i></div>' : 
+                                ''}
+                        </div>
+                        <div class="color-info">
+                            <div class="color-value">
+                                <span>${color}</span>
+                                <button class="copy-btn" data-color="${color}">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="color-name">${colorNames[index]}</div>
+                        </div>
+                    `;
+                    
+                    paletteGrid.appendChild(colorCard);
+                });
+                
+                this.setupColorCardListeners();
+            }
+            
+            setupColorCardListeners() {
+                // Click to copy
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const color = btn.getAttribute('data-color');
+                        this.copyToClipboard(color);
+                        this.showNotification(`Copied: ${color}`);
+                    });
+                });
+                
+                // Click to lock/unlock
+                document.querySelectorAll('.color-display').forEach(display => {
+                    display.addEventListener('click', (e) => {
+                        const index = parseInt(display.getAttribute('data-index'));
+                        this.toggleLock(index);
+                    });
+                });
+            }
+            
+            toggleLock(index) {
+                if (this.lockedColors.has(index)) {
+                    this.lockedColors.delete(index);
+                } else {
+                    this.lockedColors.add(index);
+                }
+                this.renderPalette();
+            }
+            
+            lockAll() {
+                for (let i = 0; i < 5; i++) {
+                    this.lockedColors.add(i);
+                }
+                this.renderPalette();
+            }
+            
+            unlockAll() {
+                this.lockedColors.clear();
+                this.renderPalette();
+            }
+            
+            savePalette() {
+                const paletteData = {
+                    colors: [...this.palette],
+                    timestamp: new Date().toISOString(),
+                    type: document.getElementById('paletteType').value
                 };
                 
-                palette.appendChild(colorBox);
+                this.history.unshift(paletteData);
+                if (this.history.length > 10) {
+                    this.history = this.history.slice(0, 10);
+                }
+                
+                localStorage.setItem('paletteHistory', JSON.stringify(this.history));
+                this.renderHistory();
+                this.showNotification('Palette saved to history!');
             }
-        }
-        
-        document.getElementById('generateBtn').onclick = generatePalette;
-        generatePalette(); // Generate awal
-    </script>
-</body>
-</html>
+            
+            renderHistory() {
+                const historyContainer = document.getElementById('paletteHistory');
+                historyContainer.innerHTML = '';
+                
+                this.history.forEach((palette, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'color-card';
+                    historyItem.style.cursor = 'pointer';
+                    historyItem.style.width = '100px';
+                    historyItem.innerHTML = `
+                        <div style="height: 60px; border-radius: 8px 8px 0 0; background: linear-gradient(90deg, ${palette.colors.join(', ')})"></div>
+                        <div style="padding: 0.5rem; font-size: 0.8rem; text-align: center;">
+                            ${new Date(palette.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </div>
+                    `;
+                    
+                    historyItem.addEventListener('click', () => {
+                        this.palette = [...palette.colors];
+                        this.renderPalette();
+                        this.showNotification('Palette loaded from history!');
+                    });
+                    
+                    historyContainer.appendChild(historyItem);
+                });
+            }
+            
+            exportAsCSS() {
+                const css = `
+/* Color Palette - Generated by DevTools Pro */
+:root {
+    --primary-color: ${this.palette[0]};
+    --secondary-color: ${this.palette[1]};
+    --accent-color: ${this.palette[2]};
+    --background-color: ${this.palette[3]};
+    --text-color: ${this.palette[4]};
+}
+
+/* Usage example */
+.primary-bg { background-color: var(--primary-color); }
+.secondary-bg { background-color: var(--secondary-color); }
+.text-primary { color: var(--primary-color); }
+                `;
+                
+                this.copyToClipboard(css);
+                this.showNotification('CSS copied to clipboard!');
+            }
+            
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                });
+            }
+            
+            showNotification(message) {
+                const notification = document.getElementById('notification');
+                const notificationText = document.getElementById('notification
