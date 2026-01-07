@@ -518,4 +518,47 @@
             
             showNotification(message) {
                 const notification = document.getElementById('notification');
-                const notificationText = document.getElementById('notification
+                const notificationText = document.getElementById('notificationText');
+                
+                notificationText.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            setupEventListeners() {
+                document.getElementById('generateBtn').addEventListener('click', () => {
+                    this.generatePalette();
+                });
+                
+                document.getElementById('lockAllBtn').addEventListener('click', () => {
+                    this.lockAll();
+                });
+                
+                document.getElementById('unlockAllBtn').addEventListener('click', () => {
+                    this.unlockAll();
+                });
+                
+                document.getElementById('savePaletteBtn').addEventListener('click', () => {
+                    this.savePalette();
+                });
+                
+                document.getElementById('exportBtn').addEventListener('click', () => {
+                    this.exportAsCSS();
+                });
+                
+                document.getElementById('paletteType').addEventListener('change', () => {
+                    this.generatePalette();
+                });
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ColorPalette();
+        });
+    </script>
+</body>
+</html>
