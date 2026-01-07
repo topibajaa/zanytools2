@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator</title>
+    <style>
+        /* CSS untuk color palette */
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .color-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+        .color-code {
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+            text-align: center;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 3px;
+            font-family: monospace;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Color Palette Generator</h1>
+        <button id="generateBtn">Generate Palette</button>
+        <div class="color-palette" id="palette"></div>
+    </div>
+    
+    <script>
+        function generateColor() {
+            return '#' + Math.floor(Math.random()*16777215).toString(16);
+        }
+        
+        function generatePalette() {
+            const palette = document.getElementById('palette');
+            palette.innerHTML = '';
+            
+            for(let i = 0; i < 5; i++) {
+                const color = generateColor();
+                const colorBox = document.createElement('div');
+                colorBox.className = 'color-box';
+                colorBox.style.backgroundColor = color;
+                colorBox.innerHTML = `<div class="color-code">${color}</div>`;
+                
+                colorBox.onclick = () => {
+                    navigator.clipboard.writeText(color);
+                    alert('Copied: ' + color);
+                };
+                
+                palette.appendChild(colorBox);
+            }
+        }
+        
+        document.getElementById('generateBtn').onclick = generatePalette;
+        generatePalette(); // Generate awal
+    </script>
+</body>
+</html>
